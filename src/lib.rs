@@ -158,6 +158,8 @@ mod verification;
 pub type ErrorResponse = Box<dyn std::error::Error + Send + Sync + 'static>;
 
 pub use mock::{Match, Mock, MockBuilder, Times};
+#[cfg(feature = "tls")]
+pub use mock_server::tls;
 pub use mock_server::{MockGuard, MockServer, MockServerBuilder};
 pub use request::{BodyPrintLimit, Request};
 pub use respond::Respond;
