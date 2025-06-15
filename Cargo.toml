@@ -27,6 +27,7 @@ futures = "0.3.31"
 http = "1.3"
 http-body-util = "0.1"
 hyper = { version = "1.7", features = ["full"] }
+hyper-server = "0.6.0"
 hyper-util = { version = "0.1", features = [
     "tokio",
     "server",
@@ -41,7 +42,6 @@ base64 = "0.22"
 url = "2.5"
 
 rcgen = { version = "0.13.2", optional = true }
-hyper-server = { version = "0.6.0", optional = true }
 rustls-pki-types = { version = "1.11.0", optional = true }
 
 [dev-dependencies]
