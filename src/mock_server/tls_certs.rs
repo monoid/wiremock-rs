@@ -9,13 +9,13 @@ use std::{
     sync::atomic::{AtomicU64, Ordering},
 };
 
+use hyper_server::tls_rustls::RustlsConfig;
 use rcgen::{
     BasicConstraints, Certificate, CertificateParams, DistinguishedName, ExtendedKeyUsagePurpose,
-    Ia5String, IsCa, KeyPair, KeyUsagePurpose, PKCS_ED25519, SanType, SerialNumber,
-    SignatureAlgorithm,
+    IsCa, KeyPair, KeyUsagePurpose, PKCS_ED25519, SanType, SerialNumber, SignatureAlgorithm,
 };
 
-use rustls_pki_types::{CertificateDer, PrivateKeyDer, pem::PemObject};
+use rustls_pki_types::{CertificateDer, PrivateKeyDer};
 
 pub const DEFAULT_ALGORITHM: &SignatureAlgorithm = &PKCS_ED25519;
 
@@ -50,6 +50,7 @@ pub struct MockTlsCertificates {
 impl MockTlsCertificates {
     /// Creates an instance with "localhost" and "127.0.0.1" as hostnames.
     // On the good old M1 processor it takes ~77 µs
+    #[inline]
     pub fn new() -> Self {
         Self::with_hostnames(default_hostnames())
     }
@@ -68,12 +69,14 @@ impl MockTlsCertificates {
         }
     }
 
+    #[inline]
     pub fn get_root_cert(&self) -> &Certificate {
         &self.root_cert
     }
 
-    pub fn server_cert_der(&self) -> CertificateDer {
-        self.server_cert.der().clone()
+    #[inline]
+    pub fn server_cert_der(&self) -> &CertificateDer<'_> {
+        self.server_cert.der()
     }
 
     pub fn server_private_key_der(&self) -> PrivateKeyDer<'_> {
@@ -83,19 +86,22 @@ impl MockTlsCertificates {
             .expect("Failed to deserialize a serialized key")
     }
 
-    pub fn gen_client<'s>(&'s self, email: &str) -> (PrivateKeyDer<'s>, CertificateDer) {
-        let (client_cert, client_key) = gen_client_cert(
+    #[inline]
+    pub fn gen_client_cert(&self, email: &str) -> (Certificate, KeyPair) {
+        gen_client_cert(
             &self.server_cert,
             &self.server_key,
             DEFAULT_ALGORITHM,
             email,
-        );
-        let private_key_der = client_key
-            .serialize_der()
-            .try_into()
-            .expect("Failed to deserialize a serialized key");
-        let client_cert_der = client_cert.der().clone();
-        (private_key_der, client_cert_der)
+        )
+    }
+
+    pub async fn get_rustls_config(&self) -> Result<RustlsConfig, std::io::Error> {
+        let server_cert_der = self.server_cert.der().to_vec();
+        let root_cert_der = self.get_root_cert().der().to_vec();
+        let server_private_key_der = self.server_key.serialize_der();
+
+        RustlsConfig::from_der(vec![server_cert_der, root_cert_der], server_private_key_der).await
     }
 }
 

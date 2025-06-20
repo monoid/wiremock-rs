@@ -2,7 +2,7 @@
 use criterion::{Criterion, criterion_group, criterion_main};
 
 #[cfg(feature = "tls")]
-use wiremock::tls::MockTlsCertificates;
+use wiremock::tls_certs::MockTlsCertificates;
 
 #[cfg(feature = "tls")]
 // On the good old M1 processor it takes ~77 µs
@@ -17,7 +17,7 @@ pub fn tls_mock_tls_certificates_new(c: &mut Criterion) {
 pub fn tls_mock_tls_certificates_client(c: &mut Criterion) {
     let mock_tls_certificates = MockTlsCertificates::new();
     c.bench_function("MockTlsCertificates::gen_client", |b| {
-        b.iter(|| mock_tls_certificates.gen_client("user@myserver.test"))
+        b.iter(|| mock_tls_certificates.gen_client_cert("user@myserver.test"))
     });
 }
 
