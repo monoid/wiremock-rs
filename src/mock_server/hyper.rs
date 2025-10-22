@@ -1,8 +1,8 @@
 use crate::mock_server::bare_server::MockServerState;
+use axum_server::accept::Accept;
 use futures::future::{BoxFuture, FutureExt as _};
 use http_body_util::Full;
 use hyper::body::Bytes;
-use hyper_server::accept::Accept;
 use hyper_util::rt::TokioIo;
 use std::sync::Arc;
 use tokio::io::{AsyncRead, AsyncWrite};

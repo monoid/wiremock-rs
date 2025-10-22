@@ -27,7 +27,7 @@ futures = "0.3.31"
 http = "1.3"
 http-body-util = "0.1"
 hyper = { version = "1.7", features = ["full"] }
-hyper-server = "0.6.0"
+axum-server = "0.7.2"
 hyper-util = { version = "0.1", features = [
     "tokio",
     "server",
@@ -55,7 +55,7 @@ criterion = "0.5.1"
 [features]
 default = []
 # Enable HTTPS mock server support.
-tls =  ["hyper-server/tls-rustls", "rcgen", "rustls-pki-types", "reqwest/rustls-tls"]
+tls =  ["axum-server/tls-rustls", "rcgen", "rustls-pki-types", "reqwest/rustls-tls"]
 
 [[bench]]
 name = "tls_certs"

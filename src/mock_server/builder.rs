@@ -3,7 +3,7 @@ use crate::mock_server::bare_server::{BareMockServer, RequestRecording};
 use crate::mock_server::exposed_server::InnerServer;
 use crate::request::{BODY_PRINT_LIMIT, BodyPrintLimit};
 #[cfg(feature = "tls")]
-use hyper_server::tls_rustls::RustlsConfig;
+use axum_server::tls_rustls::RustlsConfig;
 use std::env;
 use std::net::TcpListener;
 
@@ -106,7 +106,7 @@ impl MockServerBuilder {
 
     /// Finalise the builder to get an instance of a [`BareMockServer`].
     pub(super) async fn build_bare_http(self) -> BareMockServer {
-        use hyper_server::accept::DefaultAcceptor;
+        use axum_server::accept::DefaultAcceptor;
 
         let listener = if let Some(listener) = self.listener {
             listener
@@ -133,7 +133,7 @@ impl MockServerBuilder {
     /// Panics if DER data the `certs` is invalid.
     #[cfg(feature = "tls")]
     pub(super) async fn build_bare_https(self, certs: MockServerTlsConfig) -> BareMockServer {
-        use hyper_server::tls_rustls::RustlsAcceptor;
+        use axum_server::tls_rustls::RustlsAcceptor;
 
         let listener = if let Some(listener) = self.listener {
             listener
